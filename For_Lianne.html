@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For Lianne</title>
+<noscript><style>
+/* Without JS nothing could reveal the letter, so show everything statically. */
+.card{visibility:visible;opacity:1;transform:none;filter:none}.p,.closing{display:block}.next,.intro,.env-stage{display:none}.bg,.grad{opacity:1}
+</style></noscript>
+<style>
+:root{
+  /* One hue (brat pink) in five flat steps, darkest to lightest. */
+  --g1:#3d0024;--g2:#8a0f52;--g3:#ff5fae;--g4:#ff9ccd;--g5:#ffe6f2;
+  --ink:#3d0024;--wine:#6b0a40;
+  /* Condensed grotesque for display (brat's Arial Narrow look), clean neo-grotesque for text; both fall back to Arial. */
+  --script:"Arial Narrow","Helvetica Neue Condensed","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
+  --serif:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--g3);overflow:hidden;font-family:var(--serif);color-scheme:light}
+
+
+/* Shapes */
+.bg{position:fixed;inset:0;z-index:1;opacity:0;transition:opacity 1.6s ease;overflow:hidden;pointer-events:none}
+body.reveal .bg{opacity:1}
+.layer{position:absolute;left:0;top:0;transition:transform .9s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.shape{display:block;color:var(--c);opacity:var(--o);animation-duration:var(--d);animation-delay:var(--dl);animation-iteration-count:infinite;animation-timing-function:linear}
+.shape.rise{animation-name:rise}
+.shape.sway{animation-name:sway;animation-timing-function:ease-in-out;animation-direction:alternate}
+.k-circle{border-radius:50%;background:currentColor}
+.k-ring{border-radius:50%;border:3px solid currentColor}
+.k-petal{border-radius:0 100% 0 100%;background:currentColor}
+.k-heart svg,.fx svg{width:100%;height:100%;display:block;fill:currentColor}
+@keyframes rise{
+  0%{transform:translate3d(0,108vh,0) rotate(0);opacity:0}
+  10%{opacity:var(--o)}90%{opacity:var(--o)}
+  100%{transform:translate3d(var(--dx),-30vh,0) rotate(var(--rot));opacity:0}}
+@keyframes sway{
+  0%,100%{transform:translate3d(0,0,0) rotate(-8deg);opacity:var(--o)}
+  50%{transform:translate3d(var(--dx),-34px,0) rotate(8deg);opacity:calc(var(--o)*.6)}}
+.paused .shape,.paused .float{animation-play-state:paused}
+
+/* Intro */
+.intro{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:24px;pointer-events:none}
+.intro[hidden]{display:none}
+.intro-line{font-family:var(--script);font-size:clamp(2.6rem,13vw,5.4rem);font-weight:700;letter-spacing:-.04em;text-transform:lowercase;
+  color:var(--g1);min-height:1.2em;white-space:nowrap;
+  transition:opacity 1.2s ease,transform 1.2s ease,filter 1.2s ease}
+body.reveal .intro-line{opacity:0;transform:translate3d(0,-56px,0);filter:blur(10px)}
+/* Highlighter swipe: a background bar grows left-to-right behind the text. */
+.hl{padding:0 .18em;color:var(--g1);background:linear-gradient(var(--g5),var(--g5)) no-repeat 0 60%/0% 78%;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;animation:swipe 1s cubic-bezier(.65,0,.25,1) .35s forwards}
+@keyframes swipe{to{background-size:100% 78%}}
+
+/* 3D envelope: drag to spin, tap twice to open */
+.env-stage{position:fixed;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:64px;pointer-events:none;
+  visibility:hidden;opacity:0;transition:opacity 1.2s ease .5s;
+  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.env-stage[hidden]{display:none}
+body.reveal .env-stage{visibility:visible;opacity:1}
+/* Gaussian blur on the way out; visibility flips only after the fade so it isn't cut short. */
+body.opened .env-stage{opacity:0;filter:blur(14px);transform:scale(1.12);visibility:hidden;transition:opacity 1s ease,filter 1s ease,transform 1s ease,visibility 0s linear 1s}
+.scene{--w:min(78vw,340px);--h:calc(var(--w)*.64);position:relative;width:var(--w);height:var(--h);perspective:900px}
+/* Every ancestor between the perspective element and the faces must preserve-3d, or the depth flattens. */
+.env-wrap,.float,.spin,.env{transform-style:preserve-3d}
+.env-wrap{pointer-events:auto;touch-action:none;cursor:grab;width:100%;height:100%;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.env-wrap:active{cursor:grabbing}
+.env-wrap:focus-visible{outline:3px solid var(--g1);outline-offset:16px}
+.float,.spin,.env{position:relative;width:100%;height:100%}
+.float{animation:bob 4s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translate3d(0,-6px,0)}to{transform:translate3d(0,6px,0)}}
+.face,.edge,.fo,.fi{position:absolute;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face{inset:0;border:2px solid var(--g1);background:var(--g4)}
+.face svg,.fo svg,.fi svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.front{transform:translateZ(6px)}
+.back{transform:rotateY(180deg) translateZ(6px)}
+.ln,.tri,.flp{stroke:var(--g1);stroke-width:2;vector-effect:non-scaling-stroke}
+.ln{fill:none}.tri{fill:var(--g5)}.flp{fill:var(--g5)}
+.to{position:absolute;left:0;right:0;bottom:10%;text-align:center;font:700 clamp(1rem,5vw,1.35rem)/1 var(--script);letter-spacing:-.03em;text-transform:lowercase;color:var(--g1);text-shadow:0 0 4px rgba(61,0,36,.35)}
+.edge{background:var(--g2);border:2px solid var(--g1)}
+.e-l{left:0;top:0;bottom:0;width:12px;transform:translateX(-6px) rotateY(-90deg)}
+.e-r{right:0;top:0;bottom:0;width:12px;transform:translateX(6px) rotateY(90deg)}
+.e-t{top:0;left:0;right:0;height:12px;transform:translateY(-6px) rotateX(90deg)}
+.e-b{bottom:0;left:0;right:0;height:12px;transform:translateY(6px) rotateX(-90deg)}
+.paper{position:absolute;left:7%;right:7%;top:8%;bottom:8%;background:var(--g5);border:2px solid var(--g1);transition:transform .9s ease .45s}
+.env.open .paper{transform:translateY(-42%)}
+/* Hinged at the top edge; +180deg swings the tip toward the viewer, then up and over. */
+.flap{position:absolute;left:0;top:0;width:100%;height:58%;transform-origin:50% 0;transform:translateZ(7px);transform-style:preserve-3d;transition:transform .9s ease}
+.env.open .flap{transform:translateZ(7px) rotateX(180deg)}
+.fo,.fi{inset:0}
+.fi{transform:rotateX(180deg)}
+.fi .flp{fill:var(--g2)}
+.wax{position:absolute;left:50%;top:60%;width:30px;height:30px;margin-left:-15px;display:grid;place-items:center;border-radius:50%;background:var(--g1);color:var(--g4)}
+.wax.bk{top:50%;margin-top:-15px}
+.wax svg{position:static;width:16px;height:16px;fill:currentColor}
+.ground{position:absolute;left:12%;right:12%;bottom:-40px;height:14px;border-radius:50%;background:var(--g1);opacity:.18}
+.hint{margin:0;font:700 1rem/1.3 var(--serif);letter-spacing:-.01em;text-transform:lowercase;text-align:center;color:var(--g1);transition:opacity .4s ease}
+.hint.gone{opacity:0}
+
+/* Letter card */
+.stage{position:fixed;inset:0;z-index:5;display:grid;place-items:center;pointer-events:none;
+  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.card{pointer-events:auto;width:100%;max-width:640px;max-height:100%;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  border-radius:6px;padding:clamp(24px,6vw,52px);color:var(--ink);text-transform:lowercase;
+  /* Flat fill, hard outline and offset block shadow instead of texture and soft shadow. */
+  background:var(--g5);border:2px solid var(--g1);box-shadow:6px 6px 0 var(--g1);
+  visibility:hidden;opacity:0;transform:scale(.96);filter:blur(18px);
+  transition:opacity 1.5s ease-out,transform 1.5s ease-out,filter 1.5s ease-out}
+/* The letter only appears once the envelope has been opened; it resolves out of a gaussian blur. */
+body.opened .card{visibility:visible;opacity:1;transform:none;filter:none}
+h1{margin:0 0 .5em;font:700 clamp(2.4rem,9vw,3.6rem)/1 var(--script);letter-spacing:-.04em;color:var(--g1);text-shadow:0 0 4px rgba(61,0,36,.35)}
+.p{display:none;margin:0 0 1.1em;font-size:clamp(1rem,2.8vw,1.15rem);line-height:1.6}
+.p.show,.closing.show{display:block;animation:up .9s ease-out both}
+@keyframes up{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
+.glow{transition:text-shadow .4s ease,color .4s ease}
+.glow:hover{color:var(--g1);text-shadow:0 0 14px var(--g3),0 0 4px var(--g3)}
+.closing{display:none;margin-top:1.6em}
+.sign{margin:0 0 1.1rem;font:700 clamp(1.6rem,6vw,2.2rem)/1.15 var(--script);letter-spacing:-.03em;color:var(--g1);transition:opacity .35s ease}
+.sign.ps{font:400 1.1rem/1.6 var(--serif);letter-spacing:0;color:var(--ink)}
+.seal{display:grid;place-items:center;margin:.4rem auto 0;width:68px;height:68px;border:0;padding:0;cursor:pointer;color:var(--g4);
+  border-radius:50%;background:var(--g1);box-shadow:3px 3px 0 var(--g3);
+  transition:transform .2s ease}
+.seal:hover{transform:scale(1.06)}.seal:active{transform:scale(.94)}
+.seal svg{width:30px;height:30px;fill:currentColor}
+.next{display:block;margin:1.2rem auto 0;min-height:44px;padding:.6em 1.5em;border:2px solid var(--g1);border-radius:999px;
+  background:var(--g3);color:var(--g1);font:700 1rem var(--serif);cursor:pointer}
+.next[hidden]{display:none}
+.seal:focus-visible,.next:focus-visible{outline:3px solid var(--g1);outline-offset:4px}
+.fx{position:fixed;left:0;top:0;z-index:20;pointer-events:none;color:var(--c);will-change:transform,opacity}
+
+@media (prefers-reduced-motion:reduce){
+  .shape,.grad,.hl{animation:none!important}
+  .hl{background-size:100% 78%}
+  .env-stage{display:none}
+  .layer,.card,.bg,.grad,.intro-line,.sign{transition:none!important}
+  .p.show,.closing.show{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="bg" id="bg" aria-hidden="true"></div>
+
+<div class="env-stage" id="envStage">
+  <div class="scene">
+    <div class="env-wrap" id="envWrap" role="button" tabindex="0" aria-label="Sealed envelope for Lianne. Drag to spin it. Tap it twice, or press Enter, to open.">
+      <div class="float"><div class="spin" id="spin"><div class="env" id="env">
+        <div class="face back"><span class="wax bk"><svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21s-9-5.6-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.4-9 12-9 12z"/></svg></span></div>
+        <div class="paper"></div>
+        <div class="face front">
+          <svg viewBox="0 0 320 205" preserveAspectRatio="none" aria-hidden="true"><path class="ln" d="M0 0 L160 105 L320 0"/><path class="tri" d="M0 205 L160 105 L320 205 Z"/></svg>
+          <span class="to">for lianne</span>
+        </div>
+        <div class="edge e-l"></div><div class="edge e-r"></div><div class="edge e-t"></div><div class="edge e-b"></div>
+        <div class="flap">
+          <div class="fo"><svg viewBox="0 0 320 120" preserveAspectRatio="none" aria-hidden="true"><path class="flp" d="M0 0 L320 0 L160 118 Z"/></svg><span class="wax"><svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21s-9-5.6-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.4-9 12-9 12z"/></svg></span></div>
+          <div class="fi"><svg viewBox="0 0 320 120" preserveAspectRatio="none" aria-hidden="true"><path class="flp" d="M0 0 L320 0 L160 118 Z"/></svg></div>
+        </div>
+      </div></div></div>
+    </div>
+    <div class="ground" aria-hidden="true"></div>
+  </div>
+  <p class="hint" id="hint">drag to spin, then tap it twice to open</p>
+</div>
+
+<!-- Decorative duplicate of the card heading, so screen readers skip it. -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-line"><mark class="hl" id="typed">Dear Lianne,</mark></div>
+</div>
+
+<main class="stage">
+  <article class="card" id="card" aria-label="A letter for Lianne">
+    <h1>Dear Lianne,</h1>
+    <p class="p" data-step>I wanted to write this down properly, because some things deserve more than a quick message.</p>
+    <p class="p" data-step>You have a way of making ordinary days feel <span class="glow">lighter</span>. A laugh, a look, a quiet moment, and suddenly everything makes sense again.</p>
+    <p class="p" data-step>I notice the small things: how you light up when you talk about what you love, how you make room for everyone, how being near you feels like <span class="glow">home</span>.</p>
+    <p class="p" data-step>I don’t have grand promises, just this: I’m <span class="glow">grateful</span> for you, I’m better with you, and I’d choose you again on every ordinary day.</p>
+    <footer class="closing" data-step id="closing">
+      <p class="sign" id="sign" aria-live="polite"><span class="glow">Always</span> yours,<br>Marc</p>
+      <button class="seal" id="seal" type="button" aria-label="Break the wax seal to reveal a postscript">
+        <svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21s-9-5.6-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.4-9 12-9 12z"/></svg>
+      </button>
+    </footer>
+    <button class="next" id="next" type="button">tap to continue</button>
+  </article>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var HOLD_MS = 1200;
+  var MAX_SHAPES = 24, MAX_FX = 90;
+  var HEART = '<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21s-9-5.6-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.4-9 12-9 12z"/></svg>';
+  // Dark and light steps of the one pink hue; at low opacity on the pink ground they read as tonal shapes.
+  var SHAPE_COLORS = ['#3d0024', '#8a0f52', '#ff9ccd', '#ffe6f2'];
+  // Bursts land on the pale card, so they skip the lightest step.
+  var BURST_COLORS = ['#3d0024', '#8a0f52', '#ff5fae', '#ff9ccd'];
+
+  var reduce = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  var $ = function (id) { return document.getElementById(id); };
+  var body = document.body, bg = $('bg'), intro = $('intro'),
+      card = $('card'), next = $('next'), seal = $('seal'), sign = $('sign');
+  var steps = [].slice.call(document.querySelectorAll('[data-step]'));
+  var rand = function (a, b) { return a + Math.random() * (b - a); };
+  var pick = function (a) { return a[Math.floor(Math.random() * a.length)]; };
+
+  /* ---------- Background shapes ---------- */
+  var layers = [];
+
+  // Builds a capped number of shapes. Only transform/opacity animate; size, blur and
+  // colour are static so the compositor does all the per-frame work.
+  function buildShapes() {
+    var n = Math.min(window.innerWidth < 520 ? 18 : 22, MAX_SHAPES);
+    var kinds = ['heart', 'circle', 'ring', 'petal', 'heart', 'circle'];
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < n; i++) {
+      var size = rand(14, 92), kind = pick(kinds), rise = Math.random() < 0.62;
+      var d = rand(12, 30);
+      var layer = document.createElement('div');
+      layer.className = 'layer';
+      layer.style.left = rand(-2, 98) + '%';
+      // Rise shapes start at top:0 and are translated by keyframes; static (reduced-motion)
+      // and swaying shapes need a scattered resting position instead.
+      if (!rise || reduce) layer.style.top = rand(4, 92) + '%';
+
+      var el = document.createElement('span');
+      el.className = 'shape k-' + kind + ' ' + (rise ? 'rise' : 'sway');
+      el.style.width = size + 'px';
+      el.style.height = (kind === 'petal' ? size * 1.3 : size) + 'px';
+      el.style.setProperty('--c', pick(SHAPE_COLORS));
+      el.style.setProperty('--o', rand(0.15, 0.4).toFixed(2));
+      el.style.setProperty('--d', d.toFixed(1) + 's');
+      el.style.setProperty('--dl', (-rand(0, d)).toFixed(1) + 's'); // negative delay = already mid-flight on load
+      el.style.setProperty('--dx', rand(-80, 80).toFixed(0) + 'px');
+      el.style.setProperty('--rot', rand(-200, 200).toFixed(0) + 'deg');
+      if (kind === 'ring') el.style.borderWidth = Math.max(2, size / 18) + 'px';
+      if (kind === 'heart') el.innerHTML = HEART;
+
+      layer.appendChild(el);
+      frag.appendChild(layer);
+      layers.push({ el: layer, depth: Math.max(0.25, size / 92) }); // bigger = nearer = moves more
+    }
+    bg.appendChild(frag);
+  }
+
+  var px = 0, py = 0, ticking = false;
+  function applyParallax() {
+    ticking = false;
+    for (var i = 0; i < layers.length; i++) {
+      var l = layers[i];
+      l.el.style.transform = 'translate3d(' + (-px * 28 * l.depth).toFixed(1) + 'px,' + (-py * 28 * l.depth).toFixed(1) + 'px,0)';
+    }
+  }
+  function onMove(e) {
+    if (reduce || document.hidden) return;
+    px = e.clientX / window.innerWidth * 2 - 1;
+    py = e.clientY / window.innerHeight * 2 - 1;
+    if (!ticking) { ticking = true; requestAnimationFrame(applyParallax); } // batch to one write per frame
+  }
+  window.addEventListener('pointermove', onMove, { passive: true });
+  window.addEventListener('pointerdown', onMove, { passive: true });
+
+  document.addEventListener('visibilitychange', function () {
+    body.classList.toggle('paused', document.hidden);
+  });
+
+  /* ---------- Intro highlight ---------- */
+  // The highlight sweep is pure CSS; this just waits for it to finish, holds, then reveals.
+  function type() { setTimeout(reveal, 1350 + HOLD_MS); }
+
+  function reveal() {
+    body.classList.add('reveal');
+    // Remove the intro after its fade so it can't hold focus or paint.
+    setTimeout(function () { intro.hidden = true; }, reduce ? 0 : 1400);
+  }
+
+  /* ---------- Paragraph reveal ---------- */
+  var idx = 0, locked = false, autoScroll = false;
+
+  function atBottom() { return card.scrollTop + card.clientHeight >= card.scrollHeight - 8; }
+
+  function advance() {
+    if (locked || idx >= steps.length) return;
+    locked = true; setTimeout(function () { locked = false; }, 800); // stops one wheel flick revealing everything
+    steps[idx++].classList.add('show');
+    if (idx >= steps.length) {
+      var hadFocus = document.activeElement === next;
+      next.hidden = true;
+      if (hadFocus) seal.focus({ preventScroll: true }); // keep keyboard users from losing their place
+    }
+    scrollToEnd();
+  }
+
+  function scrollToEnd() {
+    // Flag programmatic scrolls so our own scroll doesn't count as "user scrolled to reveal more".
+    autoScroll = true; setTimeout(function () { autoScroll = false; }, 900);
+    requestAnimationFrame(function () {
+      card.scrollTo({ top: card.scrollHeight, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+
+  next.addEventListener('click', advance);
+  card.addEventListener('wheel', function (e) { if (e.deltaY > 0 && atBottom()) advance(); }, { passive: true });
+  card.addEventListener('scroll', function () { if (!autoScroll && card.scrollTop > 0 && atBottom()) advance(); }, { passive: true });
+  var ty = null;
+  card.addEventListener('touchstart', function (e) { ty = e.touches[0].clientY; }, { passive: true });
+  card.addEventListener('touchmove', function (e) {
+    // Upward swipe at the bottom: there is no overflow left to scroll, so treat it as "continue".
+    if (ty !== null && ty - e.touches[0].clientY > 28 && atBottom()) { ty = null; advance(); }
+  }, { passive: true });
+
+  /* ---------- Hearts (burst + background taps) ---------- */
+  var live = 0; // live particle count, capped so rapid clicking can't leak DOM
+
+  function spawn(x, y, size, color) {
+    if (live >= MAX_FX) return null;
+    var el = document.createElement('span');
+    el.className = 'fx';
+    el.setAttribute('aria-hidden', 'true');
+    el.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + size + 'px;height:' + size + 'px;margin:' + (-size / 2) + 'px 0 0 ' + (-size / 2) + 'px;--c:' + color;
+    el.innerHTML = HEART;
+    document.body.appendChild(el);
+    live++;
+    return el;
+  }
+
+  function play(el, frames, ms) {
+    // parentNode check makes cleanup idempotent (onfinish and the fallback timer both call it).
+    var done = function () { if (el.parentNode) { el.remove(); live--; } };
+    if (reduce || !el.animate) { setTimeout(done, 900); return; }
+    try {
+      el.animate(frames, { duration: ms, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' }).onfinish = done;
+      setTimeout(done, ms + 400); // safety net if onfinish never fires (e.g. throttled tab)
+    } catch (err) { done(); }
+  }
+
+  function burst(x, y) {
+    if (reduce) return;
+    for (var i = 0; i < 16; i++) {
+      var a = rand(0, Math.PI * 2), dist = rand(50, 130);
+      var el = spawn(x, y, rand(10, 22), pick(BURST_COLORS));
+      if (!el) break;
+      var dx = Math.cos(a) * dist, dy = Math.sin(a) * dist;
+      play(el, [
+        { transform: 'translate3d(0,0,0) scale(.4)', opacity: 1 },
+        { transform: 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(1) rotate(' + rand(-40, 40) + 'deg)', opacity: 1, offset: 0.55 },
+        { transform: 'translate3d(' + dx * 1.1 + 'px,' + (dy + 50) + 'px,0) scale(.8)', opacity: 0 }
+      ], rand(900, 1500));
+    }
+  }
+
+  function floatHeart(x, y) {
+    var el = spawn(x, y, rand(16, 30), pick(SHAPE_COLORS));
+    if (!el) return;
+    play(el, [
+      { transform: 'translate3d(0,0,0) scale(.6)', opacity: 0 },
+      { transform: 'translate3d(0,-20px,0) scale(1)', opacity: 0.9, offset: 0.15 },
+      { transform: 'translate3d(' + rand(-30, 30) + 'px,' + -rand(110, 190) + 'px,0) scale(1)', opacity: 0 }
+    ], rand(2200, 3200));
+  }
+
+  document.addEventListener('pointerdown', function (e) {
+    if (!body.classList.contains('reveal')) return;
+    if (e.target.closest && e.target.closest('#card, #envWrap')) return; // only the bare background spawns hearts (dragging the envelope must not)
+    floatHeart(e.clientX, e.clientY);
+  });
+
+  /* ---------- Wax seal ---------- */
+  var psShown = false;
+  seal.addEventListener('click', function (e) {
+    var r = seal.getBoundingClientRect();
+    // Keyboard activation reports clientX/Y = 0, so fall back to the seal's centre.
+    var x = e.detail === 0 ? r.left + r.width / 2 : e.clientX;
+    var y = e.detail === 0 ? r.top + r.height / 2 : e.clientY;
+    burst(x, y);
+    if (psShown) return;
+    psShown = true;
+    sign.style.opacity = 0;
+    setTimeout(function () {
+      sign.textContent = 'P.S. Look up. Somewhere, a heart is floating just for you.';
+      sign.classList.add('ps');
+      sign.style.opacity = 1;
+      scrollToEnd(); // the postscript can be taller than the signature it replaces
+    }, reduce ? 0 : 350);
+  });
+
+  /* ---------- 3D envelope ---------- */
+  var envStage = $('envStage'), envWrap = $('envWrap'), spin = $('spin'), envEl = $('env'), hint = $('hint');
+  var ry = -26, rx = 12, vy = 0; // rotation in degrees; vy = horizontal spin velocity left over from a drag
+  var dragging = false, opening = false, moved = 0, lx = 0, ly = 0, lastMoveT = 0, lastTap = 0;
+  var tween = null, raf = 0, lastTs = 0, IDLE_DEG_PER_S = 9;
+
+  function drawEnv() { spin.style.transform = 'rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)'; }
+
+  // One rAF loop owns all envelope rotation (drag inertia, idle turn, open tween) so they can never fight.
+  function loop(ts) {
+    raf = requestAnimationFrame(loop);
+    if (document.hidden) { lastTs = ts; return; }
+    var dt = Math.min(0.05, (ts - (lastTs || ts)) / 1000); // clamp so a stalled frame doesn't cause a jump
+    lastTs = ts;
+    if (tween) {
+      var t = Math.max(0, Math.min(1, (ts - tween.t0) / tween.ms)), k = 1 - Math.pow(1 - t, 3);
+      ry = tween.ry0 + (tween.ry1 - tween.ry0) * k;
+      rx = tween.rx0 + (tween.rx1 - tween.rx0) * k;
+      if (t >= 1) { var cb = tween.done; tween = null; cb(); }
+    } else if (!dragging && !opening) {
+      if (vy !== 0) { ry += vy; vy *= 0.94; if (Math.abs(vy) < 0.02) vy = 0; }
+      else ry += IDLE_DEG_PER_S * dt; // slow turn invites the first drag
+    }
+    drawEnv();
+  }
+
+  envWrap.addEventListener('pointerdown', function (e) {
+    if (opening) return;
+    dragging = true; moved = 0; vy = 0; lx = e.clientX; ly = e.clientY;
+    try { envWrap.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  envWrap.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var dx = e.clientX - lx, dy = e.clientY - ly;
+    lx = e.clientX; ly = e.clientY; lastMoveT = performance.now();
+    moved += Math.abs(dx) + Math.abs(dy);
+    ry += dx * 0.6; vy = dx * 0.6;
+    rx = Math.max(-30, Math.min(40, rx - dy * 0.4));
+  });
+  envWrap.addEventListener('pointerup', function () {
+    if (!dragging) return;
+    dragging = false;
+    var now = performance.now();
+    if (now - lastMoveT > 80) vy = 0; // pointer rested before release: no fling
+    vy = Math.max(-18, Math.min(18, vy));
+    if (moved < 8) { // a tap, not a drag; two taps within 450ms open it
+      if (now - lastTap < 450) { lastTap = 0; openEnv(); } else lastTap = now;
+    }
+  });
+  envWrap.addEventListener('pointercancel', function () { dragging = false; });
+  envWrap.addEventListener('keydown', function (e) {
+    if (opening) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnv(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); ry -= 20; }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); ry += 20; }
+  });
+
+  function openEnv() {
+    if (opening) return;
+    opening = true; vy = 0;
+    hint.classList.add('gone');
+    // Turn to the nearest front-facing angle first, so the flap opens toward the viewer.
+    tween = { t0: performance.now(), ms: 800, ry0: ry, ry1: Math.round(ry / 360) * 360, rx0: rx, rx1: 8, done: function () {
+      envEl.classList.add('open');
+      setTimeout(showLetter, 1100); // let the flap and the rising paper play before the swap
+    } };
+  }
+
+  function showLetter() {
+    body.classList.add('opened');
+    next.focus({ preventScroll: true }); // the envelope held focus and is about to vanish
+    setTimeout(function () { envStage.hidden = true; cancelAnimationFrame(raf); }, 1300);
+  }
+
+  /* ---------- Boot ---------- */
+  function showAll() {
+    steps.forEach(function (s) { s.classList.add('show'); });
+    next.hidden = true;
+    body.classList.add('opened');
+    envStage.hidden = true;
+    reveal();
+  }
+
+  try {
+    buildShapes();
+    if (reduce) showAll(); else { type(); raf = requestAnimationFrame(loop); }
+  } catch (err) {
+    // Any unexpected failure must not leave the reader staring at an empty screen.
+    try { showAll(); } catch (e2) { body.classList.add('reveal', 'opened'); }
+  }
+})();
+</script>
+</body>
+</html>
